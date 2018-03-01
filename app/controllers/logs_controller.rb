@@ -52,6 +52,9 @@ class LogsController < ApplicationController
       params.keys.inject({}) do |memo, param_name|
         next memo unless allowed_params_for_query.include?(param_name)
         memo[param_name] = params[param_name].split(',')
+        if param_name == 'created_at'
+          memo[param_name].map! { |v| DateTime.parse(v).beginning_of_day..DateTime.parse(v).end_of_day }
+        end
         memo
       end
     end
