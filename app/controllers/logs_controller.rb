@@ -1,10 +1,9 @@
 class LogsController < ApplicationController
-  before_action :set_log, only: [:show, :update, :destroy]
+  before_action :find_log, only: [:show, :update, :destroy]
 
-  # GET /logs
+  # GET /logs?sort_by=field&sort_direction=asc,desc&event_xid=x,y,z&event_type=a,b,c&username=d,e,f
   def index
-    @logs = Log.all
-
+    @logs = Log.where(filter_by_params).order(sort_by_params)
     render json: @logs
   end
 
@@ -40,12 +39,30 @@ class LogsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_log
+    def find_log
       @log = Log.find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
     def log_params
       params.require(:log).permit(:event_type, :event_xid, :username)
+    end
+
+    def filter_by_params
+      params.keys.inject({}) do |memo, param_name|
+        next memo unless allowed_params_for_query.include?(param_name)
+        memo[param_name] = params[param_name].split(',')
+        memo
+      end
+    end
+
+    def sort_by_params
+      return unless allowed_params_for_query.include?(params[:sort_by])
+      sort_direction = %w(asc desc).include?(params[:sort_direction]) ? params[:sort_direction].to_sym : :asc
+      { params[:sort_by].to_sym => sort_direction }
+    end
+
+    def allowed_params_for_query
+      %w(username event_xid event_type created_at).freeze
     end
 end
