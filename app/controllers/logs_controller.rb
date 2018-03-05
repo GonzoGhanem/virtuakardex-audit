@@ -4,7 +4,8 @@ class LogsController < ApplicationController
   # GET /logs?sort_by=field&sort_direction=asc,desc&event_xid=x,y,z&event_type=a,b,c&username=d,e,f
   def index
     @logs = Log.where(filter_by_params)
-                .order(sort_by_params)[page_starts, page_ends]
+                .order(sort_by_params)
+                .each_slice(per_page).to_a[page_num]
     render json: @logs
   end
 
@@ -76,13 +77,5 @@ class LogsController < ApplicationController
 
     def per_page
       params[:per_page] ? params[:per_page].to_i : 25
-    end
-
-    def page_starts
-      (per_page - 1) * (page_num - 1)
-    end
-    
-    def page_ends
-      (per_page - 1) * page_num
     end
 end
