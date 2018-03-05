@@ -72,7 +72,8 @@ class LogsController < ApplicationController
     end
 
     def page_num
-      params[:page_num] && params[:page_num].to_i != 0 ? params[:page_num].to_i : 1
+      return 0 unless params[:page_num] || params[:page_num].to_i < 0
+      params[:page_num].to_i - 1
     end
 
     def per_page
