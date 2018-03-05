@@ -3,7 +3,8 @@ class LogsController < ApplicationController
 
   # GET /logs?sort_by=field&sort_direction=asc,desc&event_xid=x,y,z&event_type=a,b,c&username=d,e,f
   def index
-    @logs = Log.where(filter_by_params).order(sort_by_params)
+    @logs = Log.where(filter_by_params)
+                .order(sort_by_params)[page_starts, page_ends]
     render json: @logs
   end
 
@@ -67,5 +68,21 @@ class LogsController < ApplicationController
 
     def allowed_params_for_query
       %w(username event_xid event_type created_at).freeze
+    end
+
+    def page_num
+      params[:page_num] && params[:page_num].to_i != 0 ? params[:page_num].to_i : 1
+    end
+
+    def per_page
+      params[:per_page] ? params[:per_page].to_i : 25
+    end
+
+    def page_starts
+      (per_page - 1) * (page_num - 1)
+    end
+    
+    def page_ends
+      (per_page - 1) * page_num
     end
 end
