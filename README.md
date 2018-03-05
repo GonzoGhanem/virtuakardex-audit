@@ -1,24 +1,26 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+# How to run app?
 
-Things you may want to cover:
+1 Install ruby 2.2.5
+2 Instal rubygems 2.4.5.1
+3 Instal bundler gem
 
-* Ruby version
+`gem install bundler -v 1.15.4`
 
-* System dependencies
+4 Install application dependencies
 
-* Configuration
+`bundle install`
 
-* Database creation
+5 Install postgres server -> version 9.4.4.1
+6 Setup app's database
 
-* Database initialization
+`bundle exec rake db:setup`
 
-* How to run the test suite
+7 Run the application in your desire port
 
-* Services (job queues, cache servers, search engines, etc.)
+`bundle exec rails server -p $PORT`
 
-* Deployment instructions
+example:
 
-* ...
+`bundle exec rails server -p 4000`
